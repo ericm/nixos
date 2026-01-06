@@ -9,7 +9,18 @@ let
   dir = ./programs;
   files = builtins.readDir dir;
   nixFiles = lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".nix" name) files;
-  programsConfig = lib.mapAttrs (name: (lib.removeSuffix ".nix" name): import (dir + "/${name}")) nixFiles;
+  programList = builtins.listToAttrs (
+    lib.mapAttrsToList (
+      name: type:
+      let
+        nixName = lib.removeSuffix ".nix" name;
+        module = import (dir + "/${name}") {
+          inherit pkgs lib;
+        };
+      in
+      lib.nameValuePair nixName module
+    ) nixFiles
+  );
 in
 {
   home.username = "eric";
@@ -67,7 +78,7 @@ in
   #   };
   # };
 
-  programs = programsConfig;
+  programs = programList;
 
   # programs.vscode = {
   # };
