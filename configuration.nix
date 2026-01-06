@@ -2,7 +2,12 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -81,6 +86,14 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+  programs = (
+    import ./utils/read-files.nix {
+      inherit pkgs;
+      inherit lib;
+      dir = ./system-programs;
+    }
+  );
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.eric = {
     isNormalUser = true;
@@ -90,24 +103,23 @@
       "wheel"
     ];
     useDefaultShell = true;
+    ignoreShellProgramCheck = true;
     shell = pkgs.zsh;
   };
 
   # Prevent the new user dialog in zsh
   system.userActivationScripts.zshrc = "touch .zshrc";
-  programs.zsh = {
-    enable = true;
-    # With Oh-My-Zsh:
-    ohMyZsh = {
-      enable = true;
-      plugins = [
-        "git" # also requires `programs.git.enable = true;`
-      ];
-      theme = "robbyrussell";
-    };
-  };
-  # Install firefox.
-  programs.firefox.enable = true;
+  # programs.zsh = {
+  #   enable = true;
+  #   # With Oh-My-Zsh:
+  #   ohMyZsh = {
+  #     enable = true;
+  #     plugins = [
+  #       "git" # also requires `programs.git.enable = true;`
+  #     ];
+  #     theme = "robbyrussell";
+  #   };
+  # };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;

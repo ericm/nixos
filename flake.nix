@@ -2,7 +2,7 @@
   description = "A very basic flake";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       # The `follows` keyword in inputs is used for inheritance.
@@ -13,12 +13,18 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager }: {
-    nixosConfigurations."eric-pc" = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        ./configuration.nix
-        home-manager.nixosModules.home-manager
+  outputs =
+    {
+      self,
+      nixpkgs,
+      home-manager,
+    }:
+    {
+      nixosConfigurations."eric-pc" = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./configuration.nix
+          home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -27,7 +33,7 @@
 
             # Optionally, use home-manager.extraSpecialArgs to pass arguments to home.nix
           }
-      ];
+        ];
+      };
     };
-  };
 }

@@ -51,5 +51,11 @@
     };
   };
 
-  programs = (import ./utils/read-files.nix {lib = lib, dir = ./programs });
+  programs = (
+    import ./utils/read-files.nix {
+      inherit pkgs;
+      inherit lib;
+      dir = ./programs;
+    }
+  );
 }

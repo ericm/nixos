@@ -1,4 +1,9 @@
-{ lib, dir, ... }:
+{
+  pkgs,
+  lib,
+  dir,
+  ...
+}:
 let
   files = builtins.readDir dir;
   nixFiles = lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".nix" name) files;
