@@ -7,6 +7,7 @@ with pkgs;
   git
   virt-manager
   libvirt
+  qemu
   nixfmt
   jq
   direnv

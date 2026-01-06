@@ -5,23 +5,6 @@
   ...
 }:
 
-let
-  dir = ./programs;
-  files = builtins.readDir dir;
-  nixFiles = lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".nix" name) files;
-  programList = builtins.listToAttrs (
-    lib.mapAttrsToList (
-      name: type:
-      let
-        nixName = lib.removeSuffix ".nix" name;
-        module = import (dir + "/${name}") {
-          inherit pkgs lib;
-        };
-      in
-      lib.nameValuePair nixName module
-    ) nixFiles
-  );
-in
 {
   home.username = "eric";
   home.homeDirectory = "/home/eric";
@@ -68,18 +51,5 @@ in
     };
   };
 
-  # programs.git = {
-  #   enable = true;
-  #   settings = {
-  #     user = {
-  #       name = "Eric Moynihan";
-  #       email = "git@moynihan.io";
-  #     };
-  #   };
-  # };
-
-  programs = programList;
-
-  # programs.vscode = {
-  # };
+  programs = (import ./utils/read-files.nix {lib = lib, dir = ./programs });
 }
