@@ -15,6 +15,14 @@
     ./hardware-configuration.nix
   ];
 
+  programs = (
+    import ./utils/read-files.nix {
+      inherit pkgs;
+      inherit lib;
+      dir = ./system-programs;
+    }
+  );
+
   # Bootloader.
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/sda";
@@ -29,6 +37,12 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+ 
+  hardware.graphics.enable = true;
+  hardware.graphics.extraPackages = with pkgs; [
+    mesa
+    libvdpau-va-gl
+  ];
 
   # Set your time zone.
   time.timeZone = "Europe/Dublin";
@@ -49,10 +63,12 @@
   };
 
   # Enable the X11 windowing system.
-  #services.xserver.enable = true;
+  services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
-  # services.xserver.displayManager.gdm.enable = true;
+   services.displayManager.sddm.enable = true;
+   services.displayManager.sddm.wayland.enable = true;
+   services.displayManager.defaultSession = "hyprland-uwsm";
   # services.xserver.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
@@ -86,14 +102,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  programs = (
-    import ./utils/read-files.nix {
-      inherit pkgs;
-      inherit lib;
-      dir = ./system-programs;
-    }
-  );
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.eric = {
     isNormalUser = true;
@@ -117,6 +125,12 @@
   # $ nix search wget
   environment.systemPackages = import ./packages.nix { inherit pkgs; };
   environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ]; 
+  xdg.portal.enable = true;
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    MOZ_ENABLE_WAYLAND = "1";
+  };
+  #xdg.configFile."uwsm/env".source = "${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh"; 
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"

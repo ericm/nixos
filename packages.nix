@@ -12,4 +12,6 @@ with pkgs;
   jq
   direnv
   kitty
+  mesa-demos
+  mesa-gl-headers
 ]

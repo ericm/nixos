@@ -40,5 +40,11 @@
       dir = ./programs;
     }
   );
-  wayland.windowManager.hyprland.enable = true;
+  wayland.windowManager.hyprland = {
+    enable = true;
+    settings = {
+      disable_logs = false;
+    };
+    systemd.enable = false;
+  };
 }
