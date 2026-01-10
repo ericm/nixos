@@ -11,4 +11,5 @@ with pkgs;
   nixfmt
   jq
   direnv
+  kitty
 ]
