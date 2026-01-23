@@ -16,9 +16,8 @@
   ];
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "eric-pc"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -120,6 +119,26 @@
     "nix-command"
     "flakes"
   ];
+
+  environment.gnome.excludePackages = with pkgs; [
+    epiphany # web browser
+  ];
+
+  services.seatd = {
+    enable = true;
+  };
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true; # For 32-bit games
+  };
+
+  hardware.opengl = {
+    enable = true;
+    vulkanDrivers = [ "amd" ];
+  };
+
+  hardware.steam-hardware.enable = true;
 
   system.stateVersion = "25.11";
 
