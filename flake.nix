@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       # The `follows` keyword in inputs is used for inheritance.
@@ -21,6 +22,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-unstable,
       home-manager,
       steam-config-nix,
     }:
@@ -29,6 +31,14 @@
         system = "x86_64-linux";
         modules = [
           ./configuration.nix
+          {
+            nixpkgs.overlays = [
+              (final: prev: {
+                unstable = import nixpkgs-unstable { system = prev.system; };
+                gamescope = final.unstable.gamescope;
+              })
+            ];
+          }
           steam-config-nix.nixosModules.default
           home-manager.nixosModules.home-manager
           {
