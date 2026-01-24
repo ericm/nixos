@@ -21,11 +21,15 @@
       cs2 = {
         id = 730;
         launchOptions = pkgs.lib.concatStringsSep " " [
-          # "SDL_VIDEODRIVER=x11"
-          "SDL_VIDEODRIVER=wayland WAYLAND_DISPLAY=wayland-0"
+          "SDL_VIDEODRIVER=x11"
+          # "SDL_VIDEODRIVER=wayland WAYLAND_DISPLAY=wayland-0"
           "LD_PRELOAD=\"\""
+          # "LD_LIBRARY_PATH=\"/run/opengl-driver/lib:/run/opengl-driver-32/lib\""
+          # "RADV_PERFTEST=nggc,shaders"
           "RADV_PERFTEST=aco"
           "MESA_SHADER_CACHE_DIR=/home/eric/.cache/mesa-shaders"
+          "VK_ICD_FILENAMES=\"/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json:/run/opengl-driver-32/share/vulkan/icd.d/radeon_icd.i686.json\""
+          # "NIXOS_OZONE_WL=1"
           "AMD_USERQ=1"
           "gamescope"
           "-W 2560"
@@ -36,12 +40,15 @@
           "--fullscreen"
           "--immediate-flips"
           "--force-grab-cursor"
-          "--backend wayland"
+          # "--adaptive-sync"
+          "--backend sdl"
+          # "--backend headless"
+          # "--expose-wayland"
           "-s 1.0"
-          "taskset -c 2,4,6,8"
+          # "taskset -c 2,4,6,8"
           "--"
           "%command%"
-          "-refresh 280"
+          "-refresh 144"
           "+engine_low_latency_sleep_after_client_tick true"
           "+fps_max 0"
           "-nojoy"
@@ -54,6 +61,7 @@
           "-softparticlesdefaultoff"
           "-threads 4"
           "+exec autoexec"
+          "> ~/gamescope_cs2_debug.log 2>&1"
         ];
       };
     };

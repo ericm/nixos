@@ -12,5 +12,5 @@
     "--force-grab-cursor"
     "--backend sdl"
   ];
-  capSysNice = true;
+  capSysNice = false;
 }

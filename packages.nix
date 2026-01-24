@@ -18,14 +18,14 @@ with pkgs;
   vulkan-tools
 
   # Steam stuff:
-  mangohud
+  # mangohud
   protonup-qt
   protontricks
   winetricks
   wineWowPackages.stable
-  lutris
-  heroic
-  bottles
-  gamemode
+  # lutris
+  # heroic
+  # bottles
+  # gamemode
   libdrm
 ]
