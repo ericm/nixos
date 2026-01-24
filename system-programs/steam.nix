@@ -41,7 +41,7 @@
           "--fullscreen"
           "--immediate-flips"
           "--force-grab-cursor"
-          # "--adaptive-sync"
+          "--adaptive-sync"
           # "--backend sdl"
           "--backend wayland"
           # "--backend headless"
