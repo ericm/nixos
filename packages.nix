@@ -16,9 +16,14 @@ with pkgs;
   pkgsi686Linux.gperftools
   libdecor
   vulkan-tools
+  dig
+  amp
+  nodejs_20
+  btop
 
   # Steam stuff:
   # mangohud
+  pkgsi686Linux.gamemode
   protonup-qt
   protontricks
   winetricks
@@ -26,6 +31,5 @@ with pkgs;
   # lutris
   # heroic
   # bottles
-  # gamemode
   libdrm
 ]
