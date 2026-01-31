@@ -128,16 +128,19 @@ let
   # VM definitions - add more VMs here
   vms = {
     windows = {
-      memory = 8;
-      cores = 4;
+      memory = 20;
+      cores = 12;
       threads = 1;
       diskSize = "100G";
       clockOffset = "localtime";
       hyperv = true;
       iso = "/home/eric/ISOs/Win10.iso"; # Set to path or URL, e.g., "/home/eric/ISOs/Win11.iso"
-      autoinstall = true; # Enable unattended install
+      autoinstall = false; # Set to true only for fresh install
       gpuPassthrough = false; # Set to true after Windows is installed and AMD drivers are set up
-      cpuPinning = [ 2 3 4 5 ]; # Pin vCPUs to physical cores 2-5 (avoid core 0-1 for host)
+      cpuPinning = [ 4 5 6 7 8 9 10 11 12 13 14 15 ]; # Pin vCPUs to physical cores 4-15 (leave 0-3 for host)
+      # Evdev passthrough - press Left Ctrl + Right Ctrl to switch input between host/VM
+      evdevKeyboard = "/dev/input/by-id/usb-Ducky_Ducky_One2_Mini_RGB_DK-V1.08-200925-event-kbd";
+      evdevMouse = "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse";
     };
     # linux = {
     #   memory = 8;
@@ -168,8 +171,8 @@ let
         <type arch='x86_64' machine='q35'>hvm</type>
         <loader readonly='yes' type='pflash'>/run/libvirt/nix-ovmf/edk2-x86_64-code.fd</loader>
         <nvram>/var/lib/libvirt/qemu/nvram/${name}_VARS.fd</nvram>
-        <boot dev='cdrom'/>
         <boot dev='hd'/>
+        <boot dev='cdrom'/>
       </os>
       <features>
         <acpi/>
@@ -198,6 +201,11 @@ let
         <topology sockets='1' dies='1' cores='${toString cfg.cores}' threads='${toString cfg.threads}'/>
         <feature policy='require' name='topoext'/>
       </cpu>
+      ${lib.optionalString (cfg.cpuPinning or [] != []) ''
+      <cputune>
+        ${lib.concatImapStringsSep "\n        " (i: core: "<vcpupin vcpu='${toString (i - 1)}' cpuset='${toString core}'/>") cfg.cpuPinning}
+      </cputune>
+      ''}
       <clock offset='${cfg.clockOffset}'>
         <timer name='rtc' tickpolicy='catchup'/>
         <timer name='pit' tickpolicy='delay'/>
@@ -261,6 +269,16 @@ let
         </interface>
         <input type='tablet' bus='usb'/>
         <input type='keyboard' bus='usb'/>
+        ${lib.optionalString (cfg.evdevKeyboard or null != null) ''
+        <input type='evdev'>
+          <source dev='${cfg.evdevKeyboard}' grab='all' grabToggle='meta-meta' repeat='on'/>
+        </input>
+        ''}
+        ${lib.optionalString (cfg.evdevMouse or null != null) ''
+        <input type='evdev'>
+          <source dev='${cfg.evdevMouse}' grab='all' grabToggle='meta-meta'/>
+        </input>
+        ''}
         <sound model='ich9'/>
         <memballoon model='virtio'/>
         <graphics type='spice' autoport='yes'>
@@ -398,6 +416,12 @@ in
     enable = true;
     internalInterfaces = [ "virbr0" ];
   };
+
+  # Allow QEMU access to input devices for evdev passthrough
+  users.users.root.extraGroups = [ "input" ];
+  services.udev.extraRules = ''
+    SUBSYSTEM=="input", GROUP="input", MODE="0660"
+  '';
 
   # Enable spice USB redirection
   virtualisation.spiceUSBRedirection.enable = true;
