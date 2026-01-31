@@ -11,121 +11,141 @@ let
 
   # Autounattend.xml for unattended Windows install
   autounattendXml = pkgs.writeText "Autounattend.xml" ''
-<?xml version="1.0" encoding="utf-8"?>
-<unattend xmlns="urn:schemas-microsoft-com:unattend">
-  <settings pass="windowsPE">
-    <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
-      <SetupUILanguage>
-        <UILanguage>en-US</UILanguage>
-      </SetupUILanguage>
-      <InputLocale>0409:00000409</InputLocale>
-      <SystemLocale>en-US</SystemLocale>
-      <UILanguage>en-US</UILanguage>
-      <UserLocale>en-US</UserLocale>
-    </component>
-    <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
-      <DiskConfiguration>
-        <Disk wcm:action="add">
-          <DiskID>0</DiskID>
-          <WillWipeDisk>true</WillWipeDisk>
-          <CreatePartitions>
-            <CreatePartition wcm:action="add">
+    <?xml version="1.0" encoding="utf-8"?>
+    <unattend xmlns="urn:schemas-microsoft-com:unattend">
+      <settings pass="windowsPE">
+        <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+          <SetupUILanguage>
+            <UILanguage>en-US</UILanguage>
+          </SetupUILanguage>
+          <InputLocale>0409:00000409</InputLocale>
+          <SystemLocale>en-US</SystemLocale>
+          <UILanguage>en-US</UILanguage>
+          <UserLocale>en-US</UserLocale>
+        </component>
+        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+          <DiskConfiguration>
+            <Disk wcm:action="add">
+              <DiskID>0</DiskID>
+              <WillWipeDisk>true</WillWipeDisk>
+              <CreatePartitions>
+                <CreatePartition wcm:action="add">
+                  <Order>1</Order>
+                  <Size>100</Size>
+                  <Type>EFI</Type>
+                </CreatePartition>
+                <CreatePartition wcm:action="add">
+                  <Order>2</Order>
+                  <Size>16</Size>
+                  <Type>MSR</Type>
+                </CreatePartition>
+                <CreatePartition wcm:action="add">
+                  <Order>3</Order>
+                  <Extend>true</Extend>
+                  <Type>Primary</Type>
+                </CreatePartition>
+              </CreatePartitions>
+              <ModifyPartitions>
+                <ModifyPartition wcm:action="add">
+                  <Order>1</Order>
+                  <PartitionID>1</PartitionID>
+                  <Format>FAT32</Format>
+                  <Label>System</Label>
+                </ModifyPartition>
+                <ModifyPartition wcm:action="add">
+                  <Order>2</Order>
+                  <PartitionID>2</PartitionID>
+                </ModifyPartition>
+                <ModifyPartition wcm:action="add">
+                  <Order>3</Order>
+                  <PartitionID>3</PartitionID>
+                  <Format>NTFS</Format>
+                  <Label>Windows</Label>
+                  <Letter>C</Letter>
+                </ModifyPartition>
+              </ModifyPartitions>
+            </Disk>
+          </DiskConfiguration>
+          <ImageInstall>
+            <OSImage>
+              <InstallTo>
+                <DiskID>0</DiskID>
+                <PartitionID>3</PartitionID>
+              </InstallTo>
+            </OSImage>
+          </ImageInstall>
+          <UserData>
+            <AcceptEula>true</AcceptEula>
+            <ProductKey>
+              <Key>VK7JG-NPHTM-C97JM-9MPGT-3V66T</Key>
+              <WillShowUI>Never</WillShowUI>
+            </ProductKey>
+          </UserData>
+        </component>
+      </settings>
+      <settings pass="oobeSystem">
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+          <OOBE>
+            <HideEULAPage>true</HideEULAPage>
+            <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+            <ProtectYourPC>3</ProtectYourPC>
+          </OOBE>
+          <FirstLogonCommands>
+            <SynchronousCommand wcm:action="add">
               <Order>1</Order>
-              <Size>100</Size>
-              <Type>EFI</Type>
-            </CreatePartition>
-            <CreatePartition wcm:action="add">
+              <CommandLine>netsh advfirewall firewall set rule group="remote desktop" new enable=yes</CommandLine>
+              <Description>Enable RDP Firewall</Description>
+            </SynchronousCommand>
+            <SynchronousCommand wcm:action="add">
               <Order>2</Order>
-              <Size>16</Size>
-              <Type>MSR</Type>
-            </CreatePartition>
-            <CreatePartition wcm:action="add">
-              <Order>3</Order>
-              <Extend>true</Extend>
-              <Type>Primary</Type>
-            </CreatePartition>
-          </CreatePartitions>
-          <ModifyPartitions>
-            <ModifyPartition wcm:action="add">
-              <Order>1</Order>
-              <PartitionID>1</PartitionID>
-              <Format>FAT32</Format>
-              <Label>System</Label>
-            </ModifyPartition>
-            <ModifyPartition wcm:action="add">
-              <Order>2</Order>
-              <PartitionID>2</PartitionID>
-            </ModifyPartition>
-            <ModifyPartition wcm:action="add">
-              <Order>3</Order>
-              <PartitionID>3</PartitionID>
-              <Format>NTFS</Format>
-              <Label>Windows</Label>
-              <Letter>C</Letter>
-            </ModifyPartition>
-          </ModifyPartitions>
-        </Disk>
-      </DiskConfiguration>
-      <ImageInstall>
-        <OSImage>
-          <InstallTo>
-            <DiskID>0</DiskID>
-            <PartitionID>3</PartitionID>
-          </InstallTo>
-        </OSImage>
-      </ImageInstall>
-      <UserData>
-        <AcceptEula>true</AcceptEula>
-        <ProductKey>
-          <Key>VK7JG-NPHTM-C97JM-9MPGT-3V66T</Key>
-          <WillShowUI>Never</WillShowUI>
-        </ProductKey>
-      </UserData>
-    </component>
-  </settings>
-  <settings pass="oobeSystem">
-    <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
-      <OOBE>
-        <HideEULAPage>true</HideEULAPage>
-        <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
-        <ProtectYourPC>3</ProtectYourPC>
-      </OOBE>
-      <UserAccounts>
-        <LocalAccounts>
-          <LocalAccount wcm:action="add">
-            <Name>User</Name>
-            <Group>Administrators</Group>
+              <CommandLine>reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f</CommandLine>
+              <Description>Enable RDP</Description>
+            </SynchronousCommand>
+          </FirstLogonCommands>
+          <UserAccounts>
+            <LocalAccounts>
+              <LocalAccount wcm:action="add">
+                <Name>User</Name>
+                <Group>Administrators</Group>
+                <Password>
+                  <Value>password</Value>
+                  <PlainText>true</PlainText>
+                </Password>
+              </LocalAccount>
+            </LocalAccounts>
+          </UserAccounts>
+          <AutoLogon>
+            <Enabled>true</Enabled>
+            <Username>User</Username>
             <Password>
               <Value>password</Value>
               <PlainText>true</PlainText>
             </Password>
-          </LocalAccount>
-        </LocalAccounts>
-      </UserAccounts>
-      <AutoLogon>
-        <Enabled>true</Enabled>
-        <Username>User</Username>
-        <Password>
-          <Value>password</Value>
-          <PlainText>true</PlainText>
-        </Password>
-        <LogonCount>999</LogonCount>
-      </AutoLogon>
-    </component>
-  </settings>
-</unattend>
+            <LogonCount>999</LogonCount>
+          </AutoLogon>
+        </component>
+      </settings>
+    </unattend>
   '';
 
   # Create an ISO with autounattend.xml
-  autounattendIso = pkgs.runCommand "autounattend.iso" {
-    nativeBuildInputs = [ pkgs.cdrkit ];
-  } ''
-    mkdir -p iso
-    cp ${autounattendXml} iso/autounattend.xml
-    ${pkgs.cdrkit}/bin/genisoimage -o $out -J -r iso
-  '';
+  autounattendIso =
+    pkgs.runCommand "autounattend.iso"
+      {
+        nativeBuildInputs = [ pkgs.cdrkit ];
+      }
+      ''
+        mkdir -p iso
+        cp ${autounattendXml} iso/autounattend.xml
+        ${pkgs.cdrkit}/bin/genisoimage -o $out -J -r iso
+      '';
 
   # VM definitions - add more VMs here
+  # For fresh Windows install, temporarily set:
+  #   autoinstall = true;
+  #   gpuPassthrough = false;
+  # And change boot order in mkVmXml to: <boot dev='cdrom'/> before <boot dev='hd'/>
+  # After install, revert these settings.
   vms = {
     windows = {
       memory = 20;
@@ -136,9 +156,23 @@ let
       hyperv = true;
       iso = "/home/eric/ISOs/Win10.iso"; # Set to path or URL, e.g., "/home/eric/ISOs/Win11.iso"
       autoinstall = false; # Set to true only for fresh install
-      gpuPassthrough = false; # Set to true after Windows is installed and AMD drivers are set up
-      cpuPinning = [ 4 5 6 7 8 9 10 11 12 13 14 15 ]; # Pin vCPUs to physical cores 4-15 (leave 0-3 for host)
-      # Evdev passthrough - press Left Ctrl + Right Ctrl to switch input between host/VM
+      gpuPassthrough = true; # GPU passthrough enabled
+      cpuPinning = [
+        4
+        5
+        6
+        7
+        8
+        9
+        10
+        11
+        12
+        13
+        14
+        15
+      ]; # Pin vCPUs to physical cores 4-15 (leave 0-3 for host)
+      # Evdev passthrough - press both Super keys to switch input between host/VM
+      # Uncomment when using GPU passthrough:
       evdevKeyboard = "/dev/input/by-id/usb-Ducky_Ducky_One2_Mini_RGB_DK-V1.08-200925-event-kbd";
       evdevMouse = "/dev/input/by-id/usb-Logitech_USB_Receiver-if02-event-mouse";
     };
@@ -201,10 +235,12 @@ let
         <topology sockets='1' dies='1' cores='${toString cfg.cores}' threads='${toString cfg.threads}'/>
         <feature policy='require' name='topoext'/>
       </cpu>
-      ${lib.optionalString (cfg.cpuPinning or [] != []) ''
-      <cputune>
-        ${lib.concatImapStringsSep "\n        " (i: core: "<vcpupin vcpu='${toString (i - 1)}' cpuset='${toString core}'/>") cfg.cpuPinning}
-      </cputune>
+      ${lib.optionalString (cfg.cpuPinning or [ ] != [ ]) ''
+        <cputune>
+          ${lib.concatImapStringsSep "\n        " (
+            i: core: "<vcpupin vcpu='${toString (i - 1)}' cpuset='${toString core}'/>"
+          ) cfg.cpuPinning}
+        </cputune>
       ''}
       <clock offset='${cfg.clockOffset}'>
         <timer name='rtc' tickpolicy='catchup'/>
@@ -270,14 +306,14 @@ let
         <input type='tablet' bus='usb'/>
         <input type='keyboard' bus='usb'/>
         ${lib.optionalString (cfg.evdevKeyboard or null != null) ''
-        <input type='evdev'>
-          <source dev='${cfg.evdevKeyboard}' grab='all' grabToggle='meta-meta' repeat='on'/>
-        </input>
+          <input type='evdev'>
+            <source dev='${cfg.evdevKeyboard}' grab='all' grabToggle='meta-meta' repeat='on'/>
+          </input>
         ''}
         ${lib.optionalString (cfg.evdevMouse or null != null) ''
-        <input type='evdev'>
-          <source dev='${cfg.evdevMouse}' grab='all' grabToggle='meta-meta'/>
-        </input>
+          <input type='evdev'>
+            <source dev='${cfg.evdevMouse}' grab='all' grabToggle='meta-meta'/>
+          </input>
         ''}
         <sound model='ich9'/>
         <memballoon model='virtio'/>
@@ -287,14 +323,22 @@ let
         <channel type='spicevmc'>
           <target type='virtio' name='com.redhat.spice.0'/>
         </channel>
+        ${lib.optionalString (!(cfg.gpuPassthrough or false)) ''
         <video>
           <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/>
         </video>
+        ''}
+        ${lib.optionalString (cfg.gpuPassthrough or false) ''
+        <video>
+          <model type='none'/>
+        </video>
+        ''}
         ${lib.optionalString (cfg.gpuPassthrough or false) ''
         <hostdev mode='subsystem' type='pci' managed='yes'>
           <source>
             <address domain='0x0000' bus='0x0a' slot='0x00' function='0x0'/>
           </source>
+          <rom bar='on'/>
         </hostdev>
         <hostdev mode='subsystem' type='pci' managed='yes'>
           <source>
@@ -327,11 +371,18 @@ let
   '';
 
   # Start hook - runs when VM starts (unbinds GPU from host)
+  # Set keepHostDisplay = true in VM config to skip unbinding (for driver installation)
   startHook =
     vmName:
     pkgs.writeShellScript "start.sh" ''
       set -x
       exec > /var/log/libvirt-hooks-${vmName}.log 2>&1
+
+      # Check if we should keep host display
+      if [ -f /tmp/keep-host-display ]; then
+        echo "Keeping host display, skipping GPU unbind"
+        exit 0
+      fi
 
       # Stop display manager
       systemctl stop display-manager.service || true
@@ -344,12 +395,12 @@ let
       # Unbind EFI Framebuffer (comment out for AMD 6000+ series)
       echo efi-framebuffer.0 > /sys/bus/platform/drivers/efi-framebuffer/unbind || true
 
-      # Unload AMD GPU modules
-      modprobe -r amdgpu || true
-
-      # Detach GPU from host
+      # Detach GPU from host FIRST (required for AMD)
       ${pkgs.libvirt}/bin/virsh nodedev-detach ${gpuPciAddress} || true
       ${pkgs.libvirt}/bin/virsh nodedev-detach ${gpuAudioPciAddress} || true
+
+      # Unload AMD GPU modules AFTER detaching (AMD-specific order)
+      modprobe -r amdgpu || true
 
       # Load VFIO
       modprobe vfio-pci
@@ -384,11 +435,13 @@ let
     '';
 in
 {
-  # Kernel parameters for IOMMU (AMD)
+  # Kernel parameters for IOMMU (AMD) and GPU passthrough
   boot.kernelParams = [
     "amd_iommu=on"
     "iommu=pt"
     "video=efifb:off"
+    "kvm.ignore_msrs=1"          # Ignore unsupported MSR accesses
+    "kvm.report_ignored_msrs=0"  # Don't spam logs
   ];
 
   # Kernel modules for VFIO
@@ -396,7 +449,11 @@ in
     "vfio"
     "vfio_iommu_type1"
     "vfio_pci"
+    "vendor-reset" # Fix AMD GPU reset bug
   ];
+
+  # Vendor-reset for AMD Navi GPUs
+  boot.extraModulePackages = [ pkgs.linuxPackages.vendor-reset ];
 
   # Enable libvirtd
   virtualisation.libvirtd = {
@@ -421,6 +478,8 @@ in
   users.users.root.extraGroups = [ "input" ];
   services.udev.extraRules = ''
     SUBSYSTEM=="input", GROUP="input", MODE="0660"
+    # Force vendor-reset for AMD Navi GPU (fixes reset bug)
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1002", ATTR{device}=="0x731f", ATTR{reset_method}="device_specific"
   '';
 
   # Enable spice USB redirection
@@ -444,7 +503,8 @@ in
     ];
     restartTriggers = [
       virtioWinIso
-    ] ++ lib.mapAttrsToList (name: cfg: mkVmXml name cfg) vms;
+    ]
+    ++ lib.mapAttrsToList (name: cfg: mkVmXml name cfg) vms;
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
@@ -459,6 +519,17 @@ in
       fi
       virsh net-start default 2>/dev/null || true
       virsh net-autostart default 2>/dev/null || true
+
+      # Create hook directories for GPU passthrough VMs
+      ${lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (name: cfg: lib.optionalString (cfg.gpuPassthrough or false) ''
+          echo "Creating hooks for ${name}..."
+          mkdir -p /var/lib/libvirt/hooks/qemu.d/${name}/prepare/begin
+          mkdir -p /var/lib/libvirt/hooks/qemu.d/${name}/release/end
+          ln -sf ${startHook name} /var/lib/libvirt/hooks/qemu.d/${name}/prepare/begin/start.sh
+          ln -sf ${stopHook name} /var/lib/libvirt/hooks/qemu.d/${name}/release/end/stop.sh
+        '') vms
+      )}
 
       # Create VM disk images
       mkdir -p /var/lib/libvirt/images
@@ -503,7 +574,25 @@ in
     looking-glass-client
     virtio-win
     pciutils
+    tigervnc  # VNC client/server
   ];
+
+  # VNC server for headless access from Windows VM
+  systemd.services.vnc-server = {
+    description = "VNC Server for headless access";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      User = "eric";
+      ExecStart = "${pkgs.tigervnc}/bin/vncserver :1 -geometry 1920x1080 -depth 24 -localhost no -fg";
+      ExecStop = "${pkgs.tigervnc}/bin/vncserver -kill :1";
+      Restart = "on-failure";
+    };
+  };
+
+  # Open VNC port for VM access
+  networking.firewall.allowedTCPPorts = [ 5901 ];
 
   # Libvirt hooks for single GPU passthrough (only for VMs with gpuPassthrough = true)
   systemd.tmpfiles.rules =
