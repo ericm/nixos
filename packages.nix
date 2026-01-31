@@ -20,6 +20,7 @@ with pkgs;
   amp
   nodejs_20
   btop
+  pciutils
 
   # Steam stuff:
   # mangohud

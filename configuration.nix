@@ -13,6 +13,8 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    # KVM/QEMU virtualization with single GPU passthrough
+    ./virtualization.nix
   ];
 
   # Bootloader.
@@ -100,6 +102,9 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+      "libvirt"
+      "kvm"
+      "input"
     ];
     useDefaultShell = true;
     ignoreShellProgramCheck = true;
