@@ -435,6 +435,19 @@ let
     '';
 in
 {
+  # Keyboard hotkey daemon - works without display (for VM hibernate)
+  # Press Ctrl+Alt+H after mod-mod to hibernate VM and return to host
+  systemd.services.vm-hotkey = {
+    description = "VM Hibernate Hotkey Listener";
+    after = [ "multi-user.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.actkbd}/bin/actkbd -n -c /etc/actkbd-vm.conf -d /dev/input/event0 -d /dev/input/event2";
+      Restart = "always";
+    };
+  };
+
   # Kernel parameters for IOMMU (AMD) and GPU passthrough
   boot.kernelParams = [
     "amd_iommu=on"
@@ -480,6 +493,8 @@ in
     SUBSYSTEM=="input", GROUP="input", MODE="0660"
     # Force vendor-reset for AMD Navi GPU (fixes reset bug)
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1002", ATTR{device}=="0x731f", ATTR{reset_method}="device_specific"
+    # Start actkbd for keyboard hotkeys
+    ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="Ducky Ducky One2 Mini RGB", TAG+="systemd", ENV{SYSTEMD_WANTS}+="actkbd@$env{DEVNAME}.service"
   '';
 
   # Enable spice USB redirection
@@ -575,6 +590,19 @@ in
     virtio-win
     pciutils
     tigervnc  # VNC client/server
+    
+    # Script to hibernate Windows VM and return to host
+    (pkgs.writeShellScriptBin "vm-hibernate" ''
+      # Save VM state and stop (releases GPU, triggers stop hook)
+      virsh managedsave windows
+      echo "VM hibernated. GPU returned to host."
+    '')
+    
+    # Script to resume hibernated VM
+    (pkgs.writeShellScriptBin "vm-resume" ''
+      virsh start windows
+      echo "VM resuming from hibernation..."
+    '')
   ];
 
   # VNC server for headless access from Windows VM
@@ -582,17 +610,53 @@ in
     description = "VNC Server for headless access";
     after = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
+    path = with pkgs; [
+      tigervnc
+      xorg.xauth
+      xorg.xrdb
+      xorg.xsetroot
+      openbox
+      dbus
+      bash
+    ];
+    environment = {
+      HOME = "/home/eric";
+      XDG_RUNTIME_DIR = "/run/user/1000";
+      DISPLAY = ":5";
+    };
     serviceConfig = {
       Type = "simple";
       User = "eric";
-      ExecStart = "${pkgs.tigervnc}/bin/vncserver :1 -geometry 1920x1080 -depth 24 -localhost no -fg";
-      ExecStop = "${pkgs.tigervnc}/bin/vncserver -kill :1";
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /home/eric/.vnc";
+      ExecStart = pkgs.writeShellScript "start-vnc" ''
+        # Clean up stale locks
+        rm -f /tmp/.X5-lock /tmp/.X11-unix/X5 2>/dev/null || true
+        
+        ${pkgs.tigervnc}/bin/Xvnc :5 \
+          -geometry 1920x1080 \
+          -depth 24 \
+          -rfbport 5901 \
+          -SecurityTypes VncAuth \
+          -PasswordFile /home/eric/.vnc/passwd &
+        XVNC_PID=$!
+        sleep 2
+        export DISPLAY=:5
+        export XDG_SESSION_TYPE=x11
+        export GDK_BACKEND=x11
+        
+        # Start D-Bus session
+        eval $(${pkgs.dbus}/bin/dbus-launch --sh-syntax)
+        export DBUS_SESSION_BUS_ADDRESS
+        
+        # Start GNOME session
+        exec ${pkgs.gnome-session}/bin/gnome-session
+      '';
       Restart = "on-failure";
     };
   };
 
-  # Open VNC port for VM access
-  networking.firewall.allowedTCPPorts = [ 5901 ];
+  # VNC only accessible from localhost (VM user-mode networking routes through QEMU internally)
+  # No external firewall port needed - QEMU handles VM->host routing
 
   # Libvirt hooks for single GPU passthrough (only for VMs with gpuPassthrough = true)
   systemd.tmpfiles.rules =
@@ -620,6 +684,42 @@ in
 
   # VM templates and setup script
   environment.etc = {
+    # actkbd config for VM hibernate hotkey
+    "actkbd-vm.conf".text = ''
+      # Ctrl+Alt+H = hibernate VM
+      29+56+35:key:exec:/etc/libvirt/hibernate-gpu-vm.sh
+    '';
+    # Script to find and hibernate the VM with GPU passthrough, then restore display
+    "libvirt/hibernate-gpu-vm.sh" = {
+      mode = "0755";
+      text = ''
+        #!/bin/sh
+        exec >> /var/log/hibernate-gpu-vm.log 2>&1
+        echo "$(date): Hibernate triggered"
+        
+        # Find running VM with GPU attached
+        for vm in $(${pkgs.libvirt}/bin/virsh list --name 2>/dev/null); do
+          if ${pkgs.libvirt}/bin/virsh dumpxml "$vm" 2>/dev/null | grep -q "0a:00.0"; then
+            echo "Hibernating $vm..."
+            ${pkgs.libvirt}/bin/virsh managedsave "$vm"
+            echo "Starting display manager..."
+            systemctl start display-manager
+            exit 0
+          fi
+        done
+        echo "No running VM with GPU found"
+      '';
+    };
+    # VNC xstartup script for GNOME session
+    "vnc/xstartup" = {
+      mode = "0755";
+      text = ''
+        #!/bin/sh
+        export XDG_SESSION_TYPE=x11
+        export GDK_BACKEND=x11
+        exec ${pkgs.gnome-session}/bin/gnome-session
+      '';
+    };
     "libvirt/vm-templates/setup-vms.sh" = {
       mode = "0755";
       text = ''

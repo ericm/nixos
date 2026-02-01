@@ -38,6 +38,19 @@
         "org.gnome.Settings.desktop"
       ];
     };
+    # Restore session after GPU passthrough returns
+    "org/gnome/gnome-session" = {
+      auto-save-session = true;
+    };
+    # Custom keybinding to hibernate VM
+    "org/gnome/settings-daemon/plugins/media-keys" = {
+      custom-keybindings = ["/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"];
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+      name = "Hibernate VM";
+      command = "/etc/libvirt/hibernate-gpu-vm.sh";
+      binding = "<Control><Alt>h";
+    };
   };
 
   xdg.autostart.enable = true;
