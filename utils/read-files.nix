@@ -2,11 +2,16 @@
   pkgs,
   lib,
   dir,
+  exclude ? [],
   ...
 }:
 let
   files = builtins.readDir dir;
-  nixFiles = lib.filterAttrs (name: type: type == "regular" && lib.hasSuffix ".nix" name) files;
+  nixFiles = lib.filterAttrs (name: type: 
+    type == "regular" && 
+    lib.hasSuffix ".nix" name && 
+    !(builtins.elem name exclude)
+  ) files;
 in
 builtins.listToAttrs (
   lib.mapAttrsToList (

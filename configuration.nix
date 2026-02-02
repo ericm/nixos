@@ -49,15 +49,18 @@
     LC_TIME = "en_IE.UTF-8";
   };
 
-  # Enable the X11 windowing system
+  # Enable the X11 windowing system (needed for GDM)
   services.xserver.enable = true;
 
-  # GNOME Desktop Environment
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  # GDM Display Manager with Wayland
+  services.displayManager.gdm.enable = true;
+  services.displayManager.gdm.wayland = true;
 
-  # GNOME Remote Desktop (RDP) for session persistence during GPU passthrough
-  services.gnome.gnome-remote-desktop.enable = true;
+  # Portal for screen sharing, file dialogs, etc.
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+  };
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -90,13 +93,20 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  programs = (
-    import ./utils/read-files.nix {
+  programs = lib.mkMerge [
+    # Hyprland
+    {
+      hyprland = {
+        enable = true;
+        xwayland.enable = true;
+      };
+    }
+    (import ./utils/read-files.nix {
       inherit pkgs;
       inherit lib;
       dir = ./system-programs;
-    }
-  );
+    })
+  ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.eric = {
@@ -128,9 +138,7 @@
     "flakes"
   ];
 
-  environment.gnome.excludePackages = with pkgs; [
-    epiphany # web browser
-  ];
+
 
   services.seatd = {
     enable = true;
@@ -141,11 +149,7 @@
     enable32Bit = true; # For 32-bit games
   };
 
-  hardware.opengl = {
-    enable = true;
-    package = pkgs.mesa.drivers;
-    # vulkanDrivers = [ "amd" ];
-  };
+  hardware.graphics.package = pkgs.mesa;
   environment.variables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json:/run/opengl-driver-32/share/vulkan/icd.d/radeon_icd.i686.json";
 
   hardware.steam-hardware.enable = true;
