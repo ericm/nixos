@@ -685,9 +685,9 @@ in
   # VM templates and setup script
   environment.etc = {
     # actkbd config for VM hibernate hotkey
+    # Super+Shift+H = 125+42+35
     "actkbd-vm.conf".text = ''
-      # Ctrl+Alt+H = hibernate VM
-      29+56+35:key:exec:/etc/libvirt/hibernate-gpu-vm.sh
+      125+42+35:key:exec:/etc/libvirt/hibernate-gpu-vm.sh
     '';
     # Script to find and hibernate the VM with GPU passthrough, then restore display
     "libvirt/hibernate-gpu-vm.sh" = {

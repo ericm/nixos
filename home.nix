@@ -49,7 +49,7 @@
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
       name = "Hibernate VM";
       command = "/etc/libvirt/hibernate-gpu-vm.sh";
-      binding = "<Control><Alt>h";
+      binding = "<Super><Shift>h";
     };
   };
 
