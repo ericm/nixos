@@ -605,8 +605,9 @@ in
     '')
   ];
 
-  # VNC server for headless access from Windows VM
+  # VNC server for headless access from Windows VM (disabled)
   systemd.services.vnc-server = {
+    enable = false;
     description = "VNC Server for headless access";
     after = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];

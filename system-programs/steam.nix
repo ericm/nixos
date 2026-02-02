@@ -27,7 +27,7 @@
           "RADV_PERFTEST=aco"
           "MESA_SHADER_CACHE_DIR=/home/eric/.cache/mesa-shaders"
           "AMD_USERQ=1"
-          "ENABLE_GAMESCOPE_WSI=1"
+          # "ENABLE_GAMESCOPE_WSI=1"
 
           # Gamescope
           # "gamescope"
@@ -44,6 +44,7 @@
           # "--"
 
           # Game command
+          # "gamemoderun"
           "taskset -c 2,4,6,8"
           "%command%"
 
