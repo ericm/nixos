@@ -89,21 +89,21 @@
   services.hyprpaper = import ./programs/hyprpaper.nix { inherit pkgs; };
 
   # CS2 autoexec
-  home.file.".local/share/Steam/steamapps/common/Counter-Strike Global Offensive/game/csgo/cfg/autoexec.cfg".text = ''
-    // Network
-    rate 786432
-    cl_interp_ratio 1
-    cl_interp 0
-    
-    echo "autoexec.cfg loaded"
-  '';
+  home.file.".local/share/Steam/steamapps/common/Counter-Strike Global Offensive/game/csgo/cfg/autoexec.cfg".text =
+    ''
+      // Network
+      rate 786432
+      cl_interp_ratio 1
+      cl_interp 0
+      echo "autoexec.cfg loaded"
+    '';
 
   xdg.configFile."hypr/scripts/cs2-gamescope.sh" = {
     executable = true;
     text = ''
       #!/usr/bin/env bash
       # Run from TTY2: Ctrl+Alt+F2, login, then run this script
-      
+
       # Environment variables
       export LD_PRELOAD=""
       export RADV_PERFTEST=aco
@@ -111,7 +111,7 @@
       export AMD_USERQ=1
       export XDG_SESSION_TYPE=wayland
       export SDL_VIDEODRIVER=wayland
-      
+
       gamescope \
         -W 2560 -H 1440 \
         -w 2560 -h 1440 \
@@ -165,7 +165,10 @@
       inherit pkgs;
       inherit lib;
       dir = ./programs;
-      exclude = [ "hyprland.nix" "hyprpaper.nix" ];
+      exclude = [
+        "hyprland.nix"
+        "hyprpaper.nix"
+      ];
     }
   );
 }

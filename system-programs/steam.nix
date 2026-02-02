@@ -51,9 +51,11 @@
           # CS2 launch options
           "-refresh 144"
           "+engine_low_latency_sleep_after_client_tick true"
-          "+fps_max 0"
+          "+fps_max 300"
           "-nojoy"
           "-high"
+          # "-vulkan"
+          # "-quit"
           "+mat_disable_fancy_blending 1"
           "-forcenovsync"
           "+r_dynamic 0"
