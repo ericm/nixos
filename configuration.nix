@@ -119,6 +119,9 @@
       "kvm"
       "input"
       "corectrl"
+      "video"
+      "render"
+      "seat"
     ];
     useDefaultShell = true;
     ignoreShellProgramCheck = true;

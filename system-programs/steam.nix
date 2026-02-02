@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   enable = true;
-  gamescopeSession.enable = true;
+  gamescopeSession.enable = false;
   extraCompatPackages = [ pkgs.proton-ge-bin ];
   package = pkgs.steam.override {
     extraPkgs = pkgs': [
@@ -21,24 +21,27 @@
       cs2 = {
         id = 730;
         launchOptions = pkgs.lib.concatStringsSep " " [
-          # Environment variables
-          "LD_PRELOAD=\"\""
+          # Use env to clear LD_PRELOAD and set vars before gamescope
+          # "env"
+          "LD_PRELOAD="
           "RADV_PERFTEST=aco"
           "MESA_SHADER_CACHE_DIR=/home/eric/.cache/mesa-shaders"
           "AMD_USERQ=1"
+          "ENABLE_GAMESCOPE_WSI=1"
 
           # Gamescope
-          "gamescope"
-          "-W 2560"
-          "-H 1440"
-          "-w 2560"
-          "-h 1440"
-          "-r 144"
-          "-f"
-          "--immediate-flips"
-          "--force-grab-cursor"
-          "--mouse-sensitivity 1.0"
-          "--"
+          # "gamescope"
+          # "-W 2560"
+          # "-H 1440"
+          # "-w 2560"
+          # "-h 1440"
+          # "-r 144"
+          # "-f"
+          # "--immediate-flips"
+          # "--force-grab-cursor"
+          # "--mouse-sensitivity 2.0"
+          # "--backend sdl"
+          # "--"
 
           # Game command
           "taskset -c 2,4,6,8"
@@ -57,6 +60,7 @@
           "+engine_no_focus_sleep 0"
           "-softparticlesdefaultoff"
           "-threads 4"
+          "+exec autoexec"
         ];
       };
     };
