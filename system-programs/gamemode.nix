@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  enable = true;
+  enable = false;
   settings = {
     general = {
       renice = 10;

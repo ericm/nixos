@@ -16,17 +16,19 @@
   config = {
     enable = true;
     closeSteam = true;
-    defaultCompatTool = "GE-Proton";
+    defaultCompatTool = "Proton - Experimental";
     apps = {
       cs2 = {
         id = 730;
+        compatTool = null; # Run native
         launchOptions = pkgs.lib.concatStringsSep " " [
           # Use env to clear LD_PRELOAD and set vars before gamescope
           # "env"
-          "LD_PRELOAD="
+          "LD_PRELOAD=${pkgs.SDL2}/lib/libSDL2-2.0.so"
           "RADV_PERFTEST=aco"
           "MESA_SHADER_CACHE_DIR=/home/eric/.cache/mesa-shaders"
           "AMD_USERQ=1"
+          "SDL_VIDEODRIVER=wayland"
           # "ENABLE_GAMESCOPE_WSI=1"
 
           # Gamescope
@@ -54,7 +56,7 @@
           "+fps_max 300"
           "-nojoy"
           "-high"
-          # "-vulkan"
+          "-vulkan"
           # "-quit"
           "+mat_disable_fancy_blending 1"
           "-forcenovsync"

@@ -6,6 +6,7 @@
     { id = "nngceckbapebfimnlniiiahkandclblb"; } # bitwarden
     { id = "mnjggcdmjocbbbhaepdhchncahnbgone"; } # sponsorblock
     { id = "gebbhagfogifgggkldgodflihgfeippi"; } # return youtube dislike
+    { id = "ddkjiahejlhfcafbddmgiahcphecmpfh"; } # ublock origin lite
   ];
   commandLineArgs = [
     "--enable-accelerated-2d-canvas"

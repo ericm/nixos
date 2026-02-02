@@ -11,7 +11,7 @@ with pkgs;
   nixfmt
   jq
   direnv
-  discord
+  vesktop
   gnome-shell-extensions
   pkgsi686Linux.gperftools
   libdecor
