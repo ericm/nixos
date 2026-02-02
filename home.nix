@@ -21,15 +21,41 @@
   };
 
   home.packages = with pkgs; [
-    waybar
-    wofi
-    kitty
-    mako
+    # Launchers
+    wlogout
+
+    # Notifications
+    swaynotificationcenter
+
+    # Screenshots and clipboard
     grim
     slurp
     wl-clipboard
+    cliphist
+
+    # File manager
     nautilus
+
+    # Wallpaper and lock
     hyprpaper
+    hyprlock
+    hypridle
+
+    # Fonts
+    font-awesome
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.fira-code
+    fira
+
+    # Media
+    playerctl
+    brightnessctl
+
+    # Misc
+    libnotify
+    jq
+    pavucontrol
+    networkmanagerapplet
   ];
 
   wayland.windowManager.hyprland = import ./programs/hyprland.nix { inherit pkgs; };

@@ -9,69 +9,165 @@
       "HDMI-A-1,1920x1080@60,2560x0,1,transform,1"
     ];
 
+    # General window layout
     general = {
-      gaps_in = 5;
-      gaps_out = 10;
+      gaps_in = 10;
+      gaps_out = 20;
       border_size = 2;
       "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
       "col.inactive_border" = "rgba(595959aa)";
       layout = "dwindle";
+      resize_on_border = true;
+      no_border_on_floating = false;
     };
 
+    # Smart gaps - no gaps/border when only one window
+    workspace = [
+      "w[tv1], gapsout:0, gapsin:0"
+      "f[1], gapsout:0, gapsin:0"
+    ];
+
+    windowrulev2 = [
+      "bordersize 0, floating:0, onworkspace:w[tv1]"
+      "rounding 0, floating:0, onworkspace:w[tv1]"
+      "bordersize 0, floating:0, onworkspace:f[1]"
+      "rounding 0, floating:0, onworkspace:f[1]"
+      "workspace 2 silent,class:^(discord)$"
+    ];
+
+    # Decoration (blur, shadows, rounding)
     decoration = {
       rounding = 10;
+      active_opacity = 1.0;
+      inactive_opacity = 0.9;
+      fullscreen_opacity = 1.0;
+
       blur = {
         enabled = true;
-        size = 3;
-        passes = 1;
+        size = 4;
+        passes = 4;
+        new_optimizations = true;
+        ignore_opacity = true;
+        xray = true;
       };
+
       shadow = {
         enabled = true;
-        range = 4;
-        render_power = 3;
-        color = "rgba(1a1a1aee)";
+        range = 32;
+        render_power = 2;
+        color = "rgba(00000050)";
       };
     };
 
+    # Animations (End-4 style)
     animations = {
       enabled = true;
-      bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+
+      bezier = [
+        "linear, 0, 0, 1, 1"
+        "md3_standard, 0.2, 0, 0, 1"
+        "md3_decel, 0.05, 0.7, 0.1, 1"
+        "md3_accel, 0.3, 0, 0.8, 0.15"
+        "overshot, 0.05, 0.9, 0.1, 1.1"
+        "crazyshot, 0.1, 1.5, 0.76, 0.92"
+        "hyprnostretch, 0.05, 0.9, 0.1, 1.0"
+        "menu_decel, 0.1, 1, 0, 1"
+        "menu_accel, 0.38, 0.04, 1, 0.07"
+        "easeInOutCirc, 0.85, 0, 0.15, 1"
+        "easeOutCirc, 0, 0.55, 0.45, 1"
+        "easeOutExpo, 0.16, 1, 0.3, 1"
+        "softAcDecel, 0.26, 0.26, 0.15, 1"
+        "md2, 0.4, 0, 0.2, 1"
+      ];
+
       animation = [
-        "windows, 1, 7, myBezier"
-        "windowsOut, 1, 7, default, popin 80%"
+        "windows, 1, 3, md3_decel, popin 60%"
+        "windowsIn, 1, 3, md3_decel, popin 60%"
+        "windowsOut, 1, 3, md3_accel, popin 60%"
         "border, 1, 10, default"
-        "fade, 1, 7, default"
-        "workspaces, 1, 6, default"
+        "fade, 1, 3, md3_decel"
+        "layersIn, 1, 3, menu_decel, slide"
+        "layersOut, 1, 1.6, menu_accel"
+        "fadeLayersIn, 1, 2, menu_decel"
+        "fadeLayersOut, 1, 4.5, menu_accel"
+        "workspaces, 1, 7, menu_decel, slide"
+        "specialWorkspace, 1, 3, md3_decel, slidevert"
       ];
     };
 
+    # Layouts
     dwindle = {
       pseudotile = true;
       preserve_split = true;
     };
 
+    master = {
+      # new_status = "master";
+    };
+
+    # Input
     input = {
       kb_layout = "gb";
       follow_mouse = 1;
       sensitivity = 0;
     };
 
-    bind = [
-      "$mod, Return, exec, kitty"
-      "$mod, Q, killactive"
-      "$mod, M, exit"
-      "$mod, E, exec, nautilus"
-      "$mod, V, togglefloating"
-      "$mod, D, exec, wofi --show drun"
-      "$mod, F, fullscreen"
-      "$mod, P, pseudo"
-      "$mod, J, togglesplit"
+    # Misc
+    misc = {
+      disable_hyprland_logo = true;
+      disable_splash_rendering = true;
+      initial_workspace_tracking = 1;
+    };
 
+    # Keybindings (ML4W style)
+    bind = [
+      # Applications
+      "$mod, Return, exec, kitty"
+      "$mod, B, exec, vivaldi"
+      "$mod, E, exec, nautilus"
+
+      # Windows
+      "$mod, Q, killactive"
+      "$mod, F, fullscreen, 0"
+      "$mod, M, fullscreen, 1"
+      "$mod, T, togglefloating"
+      "$mod SHIFT, T, workspaceopt, allfloat"
+      "$mod, J, togglesplit"
+      "$mod, K, swapsplit"
+      "$mod, G, togglegroup"
+
+      # Focus
       "$mod, left, movefocus, l"
       "$mod, right, movefocus, r"
       "$mod, up, movefocus, u"
       "$mod, down, movefocus, d"
 
+      # Resize with keyboard
+      "$mod SHIFT, right, resizeactive, 100 0"
+      "$mod SHIFT, left, resizeactive, -100 0"
+      "$mod SHIFT, down, resizeactive, 0 100"
+      "$mod SHIFT, up, resizeactive, 0 -100"
+
+      # Swap windows
+      "$mod ALT, left, swapwindow, l"
+      "$mod ALT, right, swapwindow, r"
+      "$mod ALT, up, swapwindow, u"
+      "$mod ALT, down, swapwindow, d"
+
+      # Alt-Tab
+      "ALT, Tab, cyclenext"
+      "ALT, Tab, bringactivetotop"
+
+      # Actions
+      "$mod CTRL, R, exec, hyprctl reload"
+      "$mod, D, exec, rofi -show drun"
+      "$mod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+      "$mod, Print, exec, grim -g \"$(slurp)\" - | wl-copy"
+      "$mod ALT, F, exec, grim - | wl-copy"
+      "$mod CTRL, Q, exec, wlogout"
+      "$mod CTRL, L, exec, hyprlock"
+
+      # Workspaces
       "$mod, 1, workspace, 1"
       "$mod, 2, workspace, 2"
       "$mod, 3, workspace, 3"
@@ -94,10 +190,30 @@
       "$mod SHIFT, 9, movetoworkspace, 9"
       "$mod SHIFT, 0, movetoworkspace, 10"
 
+      "$mod, Tab, workspace, m+1"
+      "$mod SHIFT, Tab, workspace, m-1"
+
       "$mod, mouse_down, workspace, e+1"
       "$mod, mouse_up, workspace, e-1"
+      "$mod CTRL, down, workspace, empty"
 
+      # Media keys
+      ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
+      ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+      ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+      ", XF86AudioPlay, exec, playerctl play-pause"
+      ", XF86AudioNext, exec, playerctl next"
+      ", XF86AudioPrev, exec, playerctl previous"
+
+      # Custom
       "$mod SHIFT, H, exec, /etc/libvirt/hibernate-gpu-vm.sh"
+      "$mod, slash, exec, cat ~/.config/hypr/keybinds.txt | rofi -dmenu -i -p 'Keybinds'"
+      "$mod SHIFT, F, exec, hyprctl dispatch movetoworkspace empty && hyprctl dispatch fullscreen 0"
+    ];
+
+    binde = [
+      ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
+      ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
     ];
 
     bindm = [
@@ -108,8 +224,11 @@
     exec-once = [
       "hyprpaper"
       "waybar"
+      "swaync"
+      "wl-paste --watch cliphist store"
+      "hypridle"
       "discord"
-      "steam"
+      "steam -silent"
     ];
   };
 }
