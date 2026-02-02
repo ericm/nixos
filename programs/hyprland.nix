@@ -6,7 +6,7 @@
 
     monitor = [
       "DP-1,2560x1440@144,0x0,1"
-      "HDMI-A-1,1920x1080@60,-1080x0,1,transform,1"
+      "HDMI-A-1,1920x1080@60,-1080x-200,1,transform,1"
     ];
 
     # General window layout

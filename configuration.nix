@@ -118,6 +118,7 @@
       "libvirt"
       "kvm"
       "input"
+      "corectrl"
     ];
     useDefaultShell = true;
     ignoreShellProgramCheck = true;
@@ -153,6 +154,40 @@
   environment.variables.VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json:/run/opengl-driver-32/share/vulkan/icd.d/radeon_icd.i686.json";
 
   hardware.steam-hardware.enable = true;
+
+  # AMDGPU overclocking
+  hardware.amdgpu.overdrive.enable = true;
+
+  # LAVD scheduler (sched_ext)
+  services.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+  };
+
+  # Set GPU to performance mode on boot
+  systemd.services.amdgpu-performance = {
+    description = "Set AMD GPU to performance mode";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-modules-load.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      sleep 2
+      # Set AMD GPU to high performance
+      if [ -f /sys/class/drm/card1/device/power_dpm_force_performance_level ]; then
+        echo "high" > /sys/class/drm/card1/device/power_dpm_force_performance_level
+        echo "Set card1 to high performance"
+      elif [ -f /sys/class/drm/card0/device/power_dpm_force_performance_level ]; then
+        echo "high" > /sys/class/drm/card0/device/power_dpm_force_performance_level
+        echo "Set card0 to high performance"
+      fi
+      cat /sys/class/drm/card*/device/power_dpm_force_performance_level
+    '';
+  };
+
+
 
   system.stateVersion = "25.11";
 

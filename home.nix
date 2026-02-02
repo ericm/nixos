@@ -26,8 +26,8 @@
       package = pkgs.papirus-icon-theme;
     };
     cursorTheme = {
-      name = "catppuccin-mocha-dark-cursors";
-      package = pkgs.catppuccin-cursors.mochaDark;
+      name = "Adwaita";
+      package = pkgs.adwaita-icon-theme;
       size = 24;
     };
     gtk3.extraConfig = {
@@ -39,10 +39,11 @@
   };
 
   home.pointerCursor = {
-    name = "catppuccin-mocha-dark-cursors";
-    package = pkgs.catppuccin-cursors.mochaDark;
+    name = "Adwaita";
+    package = pkgs.adwaita-icon-theme;
     size = 24;
     gtk.enable = true;
+    x11.enable = true;
   };
 
   home.packages = with pkgs; [
@@ -86,6 +87,16 @@
 
   services.hyprpaper = import ./programs/hyprpaper.nix { inherit pkgs; };
 
+  # CS2 autoexec
+  home.file.".local/share/Steam/steamapps/common/Counter-Strike Global Offensive/game/csgo/cfg/autoexec.cfg".text = ''
+    // Network
+    rate 786432
+    cl_interp_ratio 1
+    cl_interp 0
+    
+    echo "autoexec.cfg loaded"
+  '';
+
   xdg.configFile."hypr/scripts/startup-workspace2.sh" = {
     executable = true;
     text = ''
@@ -96,14 +107,15 @@
       discord &
 
       # Wait for Discord to open
-      sleep 2
+      sleep 3
 
-      # Preselect down direction, then open Vivaldi below
+      # Ensure we're on workspace 2, preselect down, open Vivaldi
+      hyprctl dispatch workspace 2
       hyprctl dispatch layoutmsg preselect d
-      vivaldi &
+      vivaldi --new-window about:blank &
 
       # Return to workspace 1
-      sleep 0.5
+      sleep 1
       hyprctl dispatch workspace 1
     '';
   };
