@@ -22,13 +22,30 @@
     window_padding_width = 10;
     hide_window_decorations = true;
 
-    background_opacity = "0.85";
+    background_opacity = "0.7";
     dynamic_background_opacity = true;
+    background_blur = 1;
 
     confirm_os_window_close = 0;
 
     selection_foreground = "none";
     selection_background = "none";
+
+    # Tab bar styling (waybar-inspired)
+    tab_bar_edge = "top";
+    tab_bar_style = "powerline";
+    tab_powerline_style = "round";
+    tab_bar_min_tabs = 1;
+    tab_bar_margin_width = 8;
+    tab_bar_margin_height = "8 0";
+
+    active_tab_foreground = "#1e1e2e";
+    active_tab_background = "#89b4fa";
+    active_tab_font_style = "bold";
+    inactive_tab_foreground = "#cdd6f4";
+    inactive_tab_background = "#313244";
+    inactive_tab_font_style = "normal";
+    tab_bar_background = "#1e1e2e";
 
     # Catppuccin Mocha colors
     foreground = "#cdd6f4";

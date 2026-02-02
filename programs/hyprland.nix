@@ -6,7 +6,7 @@
 
     monitor = [
       "DP-1,2560x1440@144,0x0,1"
-      "HDMI-A-1,1920x1080@60,2560x0,1,transform,1"
+      "HDMI-A-1,1920x1080@60,-1080x0,1,transform,1"
     ];
 
     # General window layout
@@ -33,29 +33,38 @@
       "bordersize 0, floating:0, onworkspace:f[1]"
       "rounding 0, floating:0, onworkspace:f[1]"
       "workspace 2 silent,class:^(discord)$"
+      "float,class:^(.*pavucontrol.*)$"
+      "size 800 600,class:^(.*pavucontrol.*)$"
+      "center,class:^(.*pavucontrol.*)$"
     ];
 
-    # Decoration (blur, shadows, rounding)
+    # Decoration (blur, shadows, rounding) - Glass effect
     decoration = {
-      rounding = 10;
-      active_opacity = 1.0;
-      inactive_opacity = 0.9;
+      rounding = 14;
+      active_opacity = 0.95;
+      inactive_opacity = 0.85;
       fullscreen_opacity = 1.0;
 
       blur = {
         enabled = true;
-        size = 4;
+        size = 8;
         passes = 4;
         new_optimizations = true;
         ignore_opacity = true;
         xray = true;
+        noise = 0.01;
+        contrast = 1.0;
+        brightness = 1.0;
+        vibrancy = 0.2;
+        vibrancy_darkness = 0.5;
+        popups = true;
       };
 
       shadow = {
         enabled = true;
-        range = 32;
-        render_power = 2;
-        color = "rgba(00000050)";
+        range = 40;
+        render_power = 3;
+        color = "rgba(00000066)";
       };
     };
 
@@ -208,7 +217,8 @@
       # Custom
       "$mod SHIFT, H, exec, /etc/libvirt/hibernate-gpu-vm.sh"
       "$mod, slash, exec, cat ~/.config/hypr/keybinds.txt | rofi -dmenu -i -p 'Keybinds'"
-      "$mod SHIFT, F, exec, hyprctl dispatch movetoworkspace empty && hyprctl dispatch fullscreen 0"
+      "$mod SHIFT, F, movetoworkspace, empty"
+      "$mod, S, exec, pavucontrol"
     ];
 
     binde = [
@@ -222,12 +232,11 @@
     ];
 
     exec-once = [
-      "hyprpaper"
       "waybar"
       "swaync"
       "wl-paste --watch cliphist store"
       "hypridle"
-      "discord"
+      "~/.config/hypr/scripts/startup-workspace2.sh"
       "steam -silent"
     ];
   };

@@ -11,8 +11,8 @@ in
   terminal = "kitty";
   theme = {
     "*" = {
-      background = mkLiteral "rgba(30, 30, 46, 0.95)";
-      background-alt = mkLiteral "rgba(49, 50, 68, 0.95)";
+      background = mkLiteral "rgba(30, 30, 46, 0.7)";
+      background-alt = mkLiteral "rgba(49, 50, 68, 0.7)";
       foreground = mkLiteral "#cdd6f4";
       selected = mkLiteral "#89b4fa";
       active = mkLiteral "#a6e3a1";

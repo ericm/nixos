@@ -100,8 +100,8 @@
   };
 
   style = ''
-    @define-color background rgba(30, 30, 46, 0.9);
-    @define-color surface rgba(49, 50, 68, 0.9);
+    @define-color background rgba(30, 30, 46, 0.6);
+    @define-color surface rgba(49, 50, 68, 0.6);
     @define-color primary #89b4fa;
     @define-color on_surface #cdd6f4;
     @define-color border_color rgba(137, 180, 250, 0.5);
