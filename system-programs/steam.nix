@@ -33,8 +33,6 @@
 
           # Gamescope
           # "gamescope"
-          # "-W 2560"
-          # "-H 1440"
           # "-w 2560"
           # "-h 1440"
           # "-r 144"
@@ -42,12 +40,12 @@
           # "--immediate-flips"
           # "--force-grab-cursor"
           # "--mouse-sensitivity 2.0"
-          # "--backend sdl"
+          # "--backend wayland"
           # "--"
 
           # Game command
           # "gamemoderun"
-          "taskset -c 2,4,6,8"
+          "taskset -c 2,4,6,8,10,12,14,15"
           "%command%"
 
           # CS2 launch options
@@ -64,7 +62,7 @@
           "+mat_queue_mode 2"
           "+engine_no_focus_sleep 0"
           "-softparticlesdefaultoff"
-          "-threads 4"
+          "-threads 8"
           "+exec autoexec"
         ];
       };

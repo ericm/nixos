@@ -455,6 +455,7 @@ in
     "video=efifb:off"
     "kvm.ignore_msrs=1"          # Ignore unsupported MSR accesses
     "kvm.report_ignored_msrs=0"  # Don't spam logs
+    "amdgpu.dcdebugmask=0x10"
   ];
 
   # Kernel modules for VFIO
