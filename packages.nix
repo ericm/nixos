@@ -21,9 +21,11 @@ with pkgs;
   nodejs_20
   btop
   pciutils
+  jetbrains.idea-community
+  android-studio  # Includes Android emulator
 
   # Steam stuff:
-  # mangohud
+  mangohud
   pkgsi686Linux.gamemode
   protonup-qt
   protontricks

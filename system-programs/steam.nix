@@ -33,23 +33,29 @@
 
           # Gamescope
           # "gamescope"
-          # "-w 2560"
-          # "-h 1440"
+          # "-w 1280"
+          # "-h 960"
+          # "-W 2560"
+          # "-H 1440"
           # "-r 144"
+          # "-o 144"
           # "-f"
+          # "-S stretch"
           # "--immediate-flips"
           # "--force-grab-cursor"
           # "--mouse-sensitivity 2.0"
+          # # "--force-composition"
           # "--backend wayland"
           # "--"
 
           # Game command
           # "gamemoderun"
-          "taskset -c 2,4,6,8,10,12,14,15"
+          # "mangohud"
+          "taskset -c 2,4,6,8"
           "%command%"
 
           # CS2 launch options
-          "-refresh 144"
+          "-refresh 300"
           "+engine_low_latency_sleep_after_client_tick true"
           "+fps_max 300"
           "-nojoy"
@@ -62,7 +68,7 @@
           "+mat_queue_mode 2"
           "+engine_no_focus_sleep 0"
           "-softparticlesdefaultoff"
-          "-threads 8"
+          "-threads 4"
           "+exec autoexec"
         ];
       };

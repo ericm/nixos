@@ -127,6 +127,63 @@
     '';
   };
 
+  # Hyprland session save script - run before logout
+  xdg.configFile."hypr/scripts/session-save.sh" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      SESSION_FILE="$HOME/.cache/hyprland-session.json"
+      
+      # Get all windows with their workspace and class
+      hyprctl clients -j | jq '[.[] | {class: .class, workspace: .workspace.id}]' > "$SESSION_FILE"
+      
+      notify-send "Session saved" "$(jq length "$SESSION_FILE") windows saved"
+    '';
+  };
+
+  # Hyprland session restore script - run on startup
+  xdg.configFile."hypr/scripts/session-restore.sh" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      SESSION_FILE="$HOME/.cache/hyprland-session.json"
+      
+      if [ ! -f "$SESSION_FILE" ]; then
+        exit 0
+      fi
+      
+      # Read saved session and launch apps
+      jq -r '.[] | "\(.workspace) \(.class)"' "$SESSION_FILE" | sort -u | while read -r ws class; do
+        # Skip already running apps
+        if hyprctl clients -j | jq -e ".[] | select(.class == \"$class\")" > /dev/null 2>&1; then
+          continue
+        fi
+        
+        # Map class names to executables (add more as needed)
+        case "$class" in
+          "kitty") cmd="kitty" ;;
+          "vivaldi-stable") cmd="vivaldi" ;;
+          "vesktop") cmd="vesktop" ;;
+          "discord") cmd="discord" ;;
+          "steam") cmd="steam" ;;
+          "org.gnome.Nautilus") cmd="nautilus" ;;
+          "code"|"Code") cmd="code" ;;
+          *) cmd="" ;;
+        esac
+        
+        if [ -n "$cmd" ]; then
+          hyprctl dispatch workspace "$ws"
+          $cmd &
+          sleep 0.5
+        fi
+      done
+      
+      # Return to workspace 1
+      sleep 1
+      hyprctl dispatch workspace 1
+    '';
+  };
+
   programs = (
     import ./utils/read-files.nix {
       inherit pkgs;

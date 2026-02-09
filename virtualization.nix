@@ -300,7 +300,8 @@ let
         <controller type='pci' model='pcie-root-port'/>
         <controller type='pci' model='pcie-root-port'/>
         <controller type='sata'/>
-        <interface type='user'>
+        <interface type='network'>
+          <source network='default'/>
           <model type='virtio'/>
         </interface>
         <input type='tablet' bus='usb'/>
@@ -384,6 +385,10 @@ let
         exit 0
       fi
 
+      # Save Hyprland session before stopping display
+      echo "Saving Hyprland session..."
+      su - eric -c 'export HYPRLAND_INSTANCE_SIGNATURE=$(ls -t /tmp/hypr/ 2>/dev/null | head -1); ~/.config/hypr/scripts/session-save.sh' || true
+
       # Stop display manager
       systemctl stop display-manager.service || true
       sleep 2
@@ -413,41 +418,38 @@ let
       set -x
       exec >> /var/log/libvirt-hooks-${vmName}.log 2>&1
 
+      echo "=== Stop hook starting at $(date) ==="
+
+      # Unload VFIO first
+      modprobe -r vfio-pci || true
+      sleep 1
+
       # Reattach GPU to host
       ${pkgs.libvirt}/bin/virsh nodedev-reattach ${gpuPciAddress} || true
       ${pkgs.libvirt}/bin/virsh nodedev-reattach ${gpuAudioPciAddress} || true
-
-      # Unload VFIO
-      modprobe -r vfio-pci || true
-
-      # Rebind EFI framebuffer (comment out for AMD 6000+ series)
-      echo "efi-framebuffer.0" > /sys/bus/platform/drivers/efi-framebuffer/bind || true
+      sleep 1
 
       # Load AMD GPU modules
       modprobe amdgpu
+      sleep 3
 
       # Rebind VTconsoles
       echo 1 > /sys/class/vtconsole/vtcon0/bind || true
       echo 1 > /sys/class/vtconsole/vtcon1/bind || true
 
+      # Rebind EFI framebuffer (may fail on newer GPUs - that's OK)
+      echo "efi-framebuffer.0" > /sys/bus/platform/drivers/efi-framebuffer/bind 2>/dev/null || true
+
+      # Wait for GPU to initialize before starting display manager
+      sleep 2
+
       # Restart display manager
-      systemctl start display-manager.service || true
+      echo "Starting display-manager..."
+      systemctl start display-manager.service
+      echo "=== Stop hook completed at $(date) ==="
     '';
 in
 {
-  # Keyboard hotkey daemon - works without display (for VM hibernate)
-  # Press Ctrl+Alt+H after mod-mod to hibernate VM and return to host
-  systemd.services.vm-hotkey = {
-    description = "VM Hibernate Hotkey Listener";
-    after = [ "multi-user.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.actkbd}/bin/actkbd -n -c /etc/actkbd-vm.conf -d /dev/input/event0 -d /dev/input/event2";
-      Restart = "always";
-    };
-  };
-
   # Kernel parameters for IOMMU (AMD) and GPU passthrough
   boot.kernelParams = [
     "amd_iommu=on"
@@ -494,8 +496,6 @@ in
     SUBSYSTEM=="input", GROUP="input", MODE="0660"
     # Force vendor-reset for AMD Navi GPU (fixes reset bug)
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x1002", ATTR{device}=="0x731f", ATTR{reset_method}="device_specific"
-    # Start actkbd for keyboard hotkeys
-    ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="Ducky Ducky One2 Mini RGB", TAG+="systemd", ENV{SYSTEMD_WANTS}+="actkbd@$env{DEVNAME}.service"
   '';
 
   # Enable spice USB redirection
@@ -606,6 +606,34 @@ in
     '')
   ];
 
+  # Socket-activated service for VM hibernate trigger (from Windows guest)
+  systemd.sockets.vm-hibernate-trigger = {
+    description = "VM Hibernate Trigger Socket";
+    wantedBy = [ "sockets.target" ];
+    listenStreams = [ "9999" ];
+    socketConfig = {
+      Accept = false;
+    };
+  };
+
+  systemd.services.vm-hibernate-trigger = {
+    description = "VM Hibernate Trigger Service";
+    requires = [ "vm-hibernate-trigger.socket" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "vm-hibernate-trigger" ''
+        # Read and discard input from socket
+        cat > /dev/null || true
+        # Hibernate the Windows VM (ignore errors if not running)
+        ${pkgs.libvirt}/bin/virsh managedsave windows || true
+      '';
+      StandardInput = "socket";
+    };
+  };
+
+  # Allow VM network to reach host on port 9999
+  networking.firewall.interfaces."virbr0".allowedTCPPorts = [ 9999 ];
+
   # VNC server for headless access from Windows VM (disabled)
   systemd.services.vnc-server = {
     enable = false;
@@ -686,11 +714,6 @@ in
 
   # VM templates and setup script
   environment.etc = {
-    # actkbd config for VM hibernate hotkey
-    # Super+Shift+H = 125+42+35
-    "actkbd-vm.conf".text = ''
-      125+42+35:key:exec:/etc/libvirt/hibernate-gpu-vm.sh
-    '';
     # Script to find and hibernate the VM with GPU passthrough, then restore display
     "libvirt/hibernate-gpu-vm.sh" = {
       mode = "0755";

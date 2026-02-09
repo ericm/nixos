@@ -219,6 +219,7 @@
       "$mod, slash, exec, cat ~/.config/hypr/keybinds.txt | rofi -dmenu -i -p 'Keybinds'"
       "$mod SHIFT, F, movetoworkspace, empty"
       "$mod, S, exec, pavucontrol"
+      "$mod SHIFT, S, exec, ~/.config/hypr/scripts/session-save.sh"
     ];
 
     binde = [
@@ -238,6 +239,7 @@
       "hypridle"
       "~/.config/hypr/scripts/startup-workspace2.sh"
       "steam -silent"
+      "~/.config/hypr/scripts/session-restore.sh"
     ];
   };
 }
