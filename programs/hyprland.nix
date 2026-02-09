@@ -40,37 +40,23 @@
 
     # Decoration (blur, shadows, rounding) - Glass effect
     decoration = {
-      rounding = 14;
-      active_opacity = 0.95;
-      inactive_opacity = 0.85;
+      rounding = 0;
+      active_opacity = 1.0;
+      inactive_opacity = 1.0;
       fullscreen_opacity = 1.0;
 
       blur = {
-        enabled = true;
-        size = 8;
-        passes = 4;
-        new_optimizations = true;
-        ignore_opacity = true;
-        xray = true;
-        noise = 0.01;
-        contrast = 1.0;
-        brightness = 1.0;
-        vibrancy = 0.2;
-        vibrancy_darkness = 0.5;
-        popups = true;
+        enabled = false;
       };
 
       shadow = {
-        enabled = true;
-        range = 40;
-        render_power = 3;
-        color = "rgba(00000066)";
+        enabled = false;
       };
     };
 
     # Animations (End-4 style)
     animations = {
-      enabled = true;
+      enabled = false;
 
       bezier = [
         "linear, 0, 0, 1, 1"

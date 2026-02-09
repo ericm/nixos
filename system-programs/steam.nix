@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   enable = true;
-  gamescopeSession.enable = false;
+  gamescopeSession.enable = true;
   extraCompatPackages = [ pkgs.proton-ge-bin ];
   package = pkgs.steam.override {
     extraPkgs = pkgs': [
@@ -29,29 +29,25 @@
           "MESA_SHADER_CACHE_DIR=/home/eric/.cache/mesa-shaders"
           "AMD_USERQ=1"
           "SDL_VIDEODRIVER=wayland"
-          # "ENABLE_GAMESCOPE_WSI=1"
+          "ENABLE_GAMESCOPE_WSI=1"
 
           # Gamescope
-          # "gamescope"
-          # "-w 1280"
-          # "-h 960"
-          # "-W 2560"
-          # "-H 1440"
-          # "-r 144"
-          # "-o 144"
-          # "-f"
-          # "-S stretch"
-          # "--immediate-flips"
-          # "--force-grab-cursor"
-          # "--mouse-sensitivity 2.0"
-          # # "--force-composition"
-          # "--backend wayland"
-          # "--"
+          "gamescope"
+          "-w 2560"
+          "-h 1440"
+          "-W 2560"
+          "-H 1440"
+          "-r 144"
+          "-o 144"
+          "-f"
+          "--immediate-flips"
+          "--force-grab-cursor"
+          "--backend wayland"
+          "--"
 
           # Game command
-          # "gamemoderun"
-          # "mangohud"
-          "taskset -c 2,4,6,8"
+          "gamemoderun"
+          "taskset -c 2,4,6,8,10"
           "%command%"
 
           # CS2 launch options
@@ -68,7 +64,7 @@
           "+mat_queue_mode 2"
           "+engine_no_focus_sleep 0"
           "-softparticlesdefaultoff"
-          "-threads 4"
+          "-threads 5"
           "+exec autoexec"
         ];
       };
