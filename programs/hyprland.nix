@@ -33,6 +33,11 @@
       "bordersize 0, floating:0, onworkspace:f[1]"
       "rounding 0, floating:0, onworkspace:f[1]"
       "workspace 2 silent,class:^(discord)$"
+      "immediate, class:^(cs2)$"
+      "noblur, class:^(cs2)$"
+      "noshadow, class:^(cs2)$"
+      "noanim, class:^(cs2)$"
+      "opaque, class:^(cs2)$"
       "float,class:^(.*pavucontrol.*)$"
       "size 800 600,class:^(.*pavucontrol.*)$"
       "center,class:^(.*pavucontrol.*)$"
@@ -40,23 +45,37 @@
 
     # Decoration (blur, shadows, rounding) - Glass effect
     decoration = {
-      rounding = 0;
-      active_opacity = 1.0;
-      inactive_opacity = 1.0;
+      rounding = 14;
+      active_opacity = 0.95;
+      inactive_opacity = 0.85;
       fullscreen_opacity = 1.0;
 
       blur = {
-        enabled = false;
+        enabled = true;
+        size = 8;
+        passes = 4;
+        new_optimizations = true;
+        ignore_opacity = true;
+        xray = true;
+        noise = 0.01;
+        contrast = 1.0;
+        brightness = 1.0;
+        vibrancy = 0.2;
+        vibrancy_darkness = 0.5;
+        popups = true;
       };
 
       shadow = {
-        enabled = false;
+        enabled = true;
+        range = 40;
+        render_power = 3;
+        color = "rgba(00000066)";
       };
     };
 
     # Animations (End-4 style)
     animations = {
-      enabled = false;
+      enabled = true;
 
       bezier = [
         "linear, 0, 0, 1, 1"
@@ -108,6 +127,10 @@
     };
 
     # Misc
+    render = {
+      new_render_scheduling = true;
+    };
+
     misc = {
       disable_hyprland_logo = true;
       disable_splash_rendering = true;

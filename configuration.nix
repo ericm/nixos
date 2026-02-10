@@ -158,6 +158,10 @@
     VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json:/run/opengl-driver-32/share/vulkan/icd.d/radeon_icd.i686.json";
     AMD_VULKAN_ICD = "RADV";
     RADV_PERFTEST = "aco";
+    MESA_SHADER_CACHE_DIR = "/home/eric/.cache/mesa-shaders";
+    AMD_USERQ = "1";
+    SDL_VIDEODRIVER = "wayland";
+    ENABLE_GAMESCOPE_WSI = "1";
   };
 
   hardware.steam-hardware.enable = true;
