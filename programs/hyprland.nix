@@ -229,6 +229,7 @@
       "$mod SHIFT, F, movetoworkspace, empty"
       "$mod, S, exec, pavucontrol"
       "$mod SHIFT, S, exec, ~/.config/hypr/scripts/session-save.sh"
+      "$mod SHIFT, G, exec, ~/.config/hypr/scripts/cs2-gamescope.sh"
     ];
 
     binde = [
@@ -242,6 +243,7 @@
     ];
 
     exec-once = [
+      "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
       "waybar"
       "swaync"
       "wl-paste --watch cliphist store"

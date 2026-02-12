@@ -88,6 +88,16 @@
 
   services.hyprpaper = import ./programs/hyprpaper.nix { inherit pkgs; };
 
+  # CS2 gamescope DRM launch script (triggers the systemd service)
+  xdg.configFile."hypr/scripts/cs2-gamescope.sh" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      set -euo pipefail
+      sudo systemctl start cs2-gamescope
+    '';
+  };
+
   # CS2 autoexec
   home.file.".local/share/Steam/steamapps/common/Counter-Strike Global Offensive/game/csgo/cfg/autoexec.cfg".text =
     ''

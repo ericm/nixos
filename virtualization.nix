@@ -151,7 +151,7 @@ let
       memory = 20;
       cores = 12;
       threads = 1;
-      diskSize = "100G";
+      diskSize = "400G";
       clockOffset = "localtime";
       hyperv = true;
       iso = "/home/eric/ISOs/Win10.iso"; # Set to path or URL, e.g., "/home/eric/ISOs/Win11.iso"
@@ -699,6 +699,7 @@ in
       "d /var/lib/libvirt/hooks/qemu.d 0755 root root -"
       "L+ /var/lib/libvirt/hooks/qemu - - - - ${qemuHook}"
       "d /var/lib/libvirt/images 0755 root root -"
+      "d /var/lib/libvirt/qemu/nvram 0775 root root -"
     ]
     ++ lib.flatten (
       map (vm: [

@@ -1,7 +1,22 @@
 { pkgs, ... }:
 {
   enable = true;
-  gamescopeSession.enable = true;
+  gamescopeSession = {
+    enable = true;
+    args = [
+      "-w 2560"
+      "-h 1440"
+      "-r 144"
+      "--fullscreen"
+      "--immediate-flips"
+      "--force-grab-cursor"
+      "--adaptive-sync"
+      "--expose-wayland"
+    ];
+    env = {
+      "ENABLE_GAMESCOPE_WSI" = "1";
+    };
+  };
   extraCompatPackages = [ pkgs.proton-ge-bin ];
   package = pkgs.steam.override {
     extraPkgs = pkgs': [
@@ -22,8 +37,8 @@
         id = 730;
         compatTool = null; # Run native
         launchOptions = pkgs.lib.concatStringsSep " " [
-          "LD_PRELOAD=${pkgs.SDL2}/lib/libSDL2-2.0.so"
-          "~/.config/hypr/scripts/gamemode.sh"
+          # "LD_PRELOAD=${pkgs.SDL2}/lib/libSDL2-2.0.so"
+          # "~/.config/hypr/scripts/gamemode.sh"
           "gamemoderun"
           "taskset -c 2,4,6,8,10"
           "%command%"

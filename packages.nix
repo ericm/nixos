@@ -23,6 +23,8 @@ with pkgs;
   pciutils
   jetbrains.idea-community
   android-studio  # Includes Android emulator
+  udisks
+  gnome-disk-utility
 
   # Steam stuff:
   mangohud

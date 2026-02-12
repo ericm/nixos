@@ -16,5 +16,5 @@
   env = {
     "ENABLE_GAMESCOPE_WSI" = "1";
   };
-  capSysNice = false;
+  capSysNice = true;
 }

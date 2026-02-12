@@ -200,6 +200,83 @@
 
 
 
+  security.sudo.extraRules = [
+    {
+      users = [ "eric" ];
+      commands = [
+        { command = "/run/current-system/sw/bin/systemctl start cs2-gamescope"; options = [ "NOPASSWD" ]; }
+        { command = "/run/current-system/sw/bin/systemctl stop cs2-gamescope"; options = [ "NOPASSWD" ]; }
+      ];
+    }
+  ];
+
+  services.udisks2.enable = true;
+  security.polkit.enable = true;
+
+  systemd.services.cs2-gamescope = {
+    description = "CS2 via Gamescope DRM";
+    conflicts = [ "display-manager.service" "getty@tty3.service" "autovt@tty3.service" ];
+    after = [ "systemd-logind.service" ];
+
+    serviceConfig = {
+      Type = "simple";
+      User = "eric";
+      TTYPath = "/dev/tty3";
+      StandardInput = "tty-force";
+      StandardOutput = "journal";
+      StandardError = "journal";
+      SupplementaryGroups = [ "video" "render" "input" "seat" ];
+
+      Environment = [
+        "HOME=/home/eric"
+        "XDG_RUNTIME_DIR=/run/user/1000"
+        "ENABLE_GAMESCOPE_WSI=1"
+        "AMD_VULKAN_ICD=RADV"
+        "RADV_PERFTEST=aco"
+        "DXVK_ASYNC=1"
+      ];
+
+      ExecStartPre = [
+        "+${pkgs.systemd}/bin/systemctl stop display-manager.service"
+        "+${pkgs.kbd}/bin/chvt 3"
+      ];
+
+      ExecStart = let
+        launchScript = pkgs.writeShellScript "cs2-gamescope-launch" ''
+          exec ${pkgs.gamescope}/bin/gamescope \
+            --backend drm \
+            --prefer-output DP-1 \
+            -w 2560 -h 1440 \
+            -r 144 \
+            --fullscreen \
+            --immediate-flips \
+            --force-grab-cursor \
+            --adaptive-sync \
+            -e -- \
+            ${pkgs.util-linux}/bin/taskset -c 2,4,6,8,10 \
+            ${pkgs.steam}/bin/steam -tenfoot -steamdeck -gamepadui \
+              -applaunch 730 \
+              -refresh 300 \
+              +engine_low_latency_sleep_after_client_tick true \
+              +fps_max 300 \
+              -nojoy -high -vulkan \
+              +mat_disable_fancy_blending 1 \
+              -forcenovsync \
+              +r_dynamic 0 \
+              +mat_queue_mode 2 \
+              +engine_no_focus_sleep 0 \
+              -softparticlesdefaultoff \
+              -threads 5 \
+              +exec autoexec
+        '';
+      in "${launchScript}";
+
+      ExecStopPost = "+${pkgs.systemd}/bin/systemctl start display-manager.service";
+
+      Restart = "no";
+    };
+  };
+
   system.stateVersion = "25.11";
 
 }
